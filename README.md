@@ -1,4 +1,4 @@
-###SHADOWNODE-WHOIS-ANALYZER
+# SHADOWNODE-WHOIS-ANALYZER
 
 **Domain Analyzer** is a passive OSINT domain intelligence and evidence-preservation tool written in Python.
 
