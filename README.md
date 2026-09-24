@@ -226,7 +226,7 @@ The tool does **not** require a database for the core command-line workflow.
 After the project is published:
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/domain-analyzer.git
+git clone https://github.com/Joy-Ewatomi/domain-analyzer.git
 cd domain-analyzer
 ```
 
