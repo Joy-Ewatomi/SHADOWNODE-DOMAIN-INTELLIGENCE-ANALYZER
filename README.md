@@ -753,9 +753,3 @@ Current development version:
 This release focuses on the core passive collection, correlation, evidence-preservation, provenance, and verification pipeline.
 
 ---
-
-# License
-
-This project is intended to be released under the MIT License.
-
-See `LICENSE` for the full license text.
