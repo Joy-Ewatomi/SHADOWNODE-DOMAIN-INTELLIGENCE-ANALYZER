@@ -108,6 +108,9 @@ def build_correlation_findings(
 
     for asn_number, ip_addresses in observed_asns.items():
 
+        if len(ip_addresses) < 2:
+            continue
+
         asn_records = [
             asn[ip_address]
             for ip_address in ip_addresses

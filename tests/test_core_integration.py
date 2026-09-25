@@ -535,3 +535,45 @@ def test_analyze_domain_generates_unique_run_ids(monkeypatch):
     assert set(first_finding_ids).isdisjoint(
         second_finding_ids
     )
+
+
+def test_link_findings_to_artifacts_maps_evidence_sources():
+    findings = [
+        {
+            "finding_id": "finding-0001",
+            "name": "Test finding",
+            "evidence": [
+                {
+                    "source": "DNS",
+                    "value": ["ns1.example.com"],
+                },
+                {
+                    "source": "HTTP",
+                    "value": "cloudflare",
+                },
+                {
+                    "source": "DNS",
+                    "value": ["ns2.example.com"],
+                },
+                {
+                    "source": "Unknown Source",
+                    "value": "ignored",
+                },
+            ],
+        }
+    ]
+
+    artifact_ids = {
+        "dns": "run-0001-0002",
+        "http": "run-0001-0005",
+    }
+
+    result = core.link_findings_to_artifacts(
+        findings=findings,
+        artifact_ids=artifact_ids,
+    )
+
+    assert result[0]["evidence_artifacts"] == [
+        "run-0001-0002",
+        "run-0001-0005",
+    ]
