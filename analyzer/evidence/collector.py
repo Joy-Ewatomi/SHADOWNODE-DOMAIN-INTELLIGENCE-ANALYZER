@@ -25,10 +25,12 @@ class EvidenceCollector:
         self,
         case_id: str,
         run_id: str,
+        domain: str | None = None,
         collector_version: str = COLLECTOR_VERSION,
     ):
         self.case_id = case_id
         self.run_id = run_id
+        self.domain = domain
         self.collector_version = collector_version
 
         self.created_at = utc_now()
@@ -81,6 +83,12 @@ class EvidenceCollector:
 
         collected_at = utc_now()
 
+        context = {
+            "domain": self.domain,
+            "case_id": self.case_id,
+            "run_id": self.run_id,
+        }
+
         artifact = EvidenceArtifact.create(
             artifact_id=artifact_id,
             artifact_type=artifact_type,
@@ -93,6 +101,7 @@ class EvidenceCollector:
             parent_artifacts=(
                 parent_artifacts or []
             ),
+            context=context,
         )
 
         artifact_dict = artifact.to_dict()

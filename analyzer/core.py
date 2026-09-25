@@ -137,6 +137,7 @@ def analyze_domain(domain: str) -> dict:
     evidence = EvidenceCollector(
         case_id=case_id,
         run_id=run_id,
+        domain=domain,
         collector_version="1.0",
     )
 

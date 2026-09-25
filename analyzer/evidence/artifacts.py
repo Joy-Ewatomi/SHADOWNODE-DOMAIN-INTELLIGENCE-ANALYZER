@@ -28,6 +28,10 @@ class EvidenceArtifact:
         default_factory=list
     )
 
+    context: dict[str, Any] = field(
+        default_factory=dict
+    )
+
     @classmethod
     def create(
         cls,
@@ -40,6 +44,7 @@ class EvidenceArtifact:
         collector_version: str = "1.0",
         classification: str = "observed",
         parent_artifacts: list[str] | None = None,
+        context: dict[str, Any] | None = None,
     ):
         return cls(
             artifact_id=artifact_id,
@@ -54,6 +59,7 @@ class EvidenceArtifact:
             parent_artifacts=(
                 parent_artifacts or []
             ),
+            context=context or {},
         )
 
     def to_dict(self) -> dict:
@@ -67,5 +73,6 @@ class EvidenceArtifact:
             "collector_version": self.collector_version,
             "classification": self.classification,
             "parent_artifacts": self.parent_artifacts,
+            "context": self.context,
             "data": self.data,
         }
