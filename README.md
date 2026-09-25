@@ -1,6 +1,6 @@
-# SHADOWNODE-WHOIS-ANALYZER
+# SHADOWNODE DOMAIN INTELLIGENCE ANALYZER (SDIA)
 
-**Domain Analyzer** is a passive OSINT domain intelligence and evidence-preservation tool written in Python.
+**SHADOWNODE DOMAIN INTELLIGENCE ANALYZER (SDIA)** is a passive OSINT domain intelligence and evidence-preservation tool written in Python.
 
 It collects publicly observable information about a domain, normalizes the results, correlates related infrastructure, preserves collection evidence, and produces findings that can be independently verified.
 
@@ -16,7 +16,7 @@ Instead of treating a finding as an isolated claim, Domain Analyzer maintains re
 
 ### Passive Domain Intelligence
 
-Domain Analyzer currently supports:
+SHADOWNODE DOMAIN INTELLIGENCE ANALYZER (SDIA) currently supports:
 
 * RDAP domain registration information
 * RDAP registry and registrar metadata
@@ -403,6 +403,41 @@ A derived artifact records its parent artifacts so that the analytical relations
 
 Evidence artifacts are hashed using SHA-256.
 
+The artifact hash protects the artifact `data` payload. The payload is serialized using a deterministic canonical JSON representation before hashing.
+
+The canonical representation uses:
+
+* UTF-8 encoding
+* Sorted JSON object keys
+* Compact JSON separators
+* `ensure_ascii=False`
+
+The hashing process is:
+
+```text
+artifact.data
+     |
+     v
+canonical JSON
+     |
+     v
+UTF-8 bytes
+     |
+     v
+SHA-256
+     |
+     v
+artifact.sha256
+```
+
+The implementation uses the equivalent of:
+
+```python
+sha256_json(artifact.data)
+```
+
+This produces a deterministic digest for the stored evidence payload.
+
 A simplified artifact structure looks like:
 
 ```json
@@ -418,11 +453,106 @@ A simplified artifact structure looks like:
 }
 ```
 
-The evidence manifest contains the collection-level integrity information.
+## Hash Coverage
 
-This allows the verification utility to detect changes to the stored evidence.
+The artifact SHA-256 currently covers the artifact `data` payload only.
 
----
+It does **not** directly cover the surrounding artifact metadata, including:
+
+* artifact ID
+* artifact type
+* collection source
+* collection timestamp
+* collector name
+* collector version
+* evidence classification
+* parent artifact references
+* collection context
+
+This distinction is intentional.
+
+The artifact hash establishes integrity for the stored evidence payload, while the evidence manifest provides collection-level integrity and provenance information for the artifact set.
+
+## Canonicalization
+
+Canonical JSON ensures that equivalent JSON structures are serialized consistently before hashing.
+
+For example, object key ordering does not affect the resulting digest because keys are sorted before serialization.
+
+The hash therefore represents the canonical serialized form of the stored artifact data rather than the formatting of the surrounding JSON report.
+
+## Raw Acquisition and Normalized Evidence
+
+The current evidence model hashes the normalized artifact data produced by each collector.
+
+It does not claim that the SHA-256 represents the exact original network response bytes received from an external service.
+
+This distinction is important because collectors may parse, normalize, deduplicate, or otherwise transform external responses before storing their structured evidence.
+
+Future versions may preserve exact raw acquisition responses separately where the source protocol and collection semantics make that appropriate.
+
+The current model therefore makes a clear distinction between:
+
+```text
+External response
+      |
+      v
+Collector processing / normalization
+      |
+      v
+Structured evidence artifact
+      |
+      v
+Canonical JSON
+      |
+      v
+SHA-256
+```
+
+and an exact raw-response preservation model:
+
+```text
+External response
+      |
+      +--------------------+
+      |                    |
+      v                    v
+Exact raw bytes       Normalization
+      |                    |
+      v                    v
+Raw-response hash     Structured artifact
+                           |
+                           v
+                     Artifact hash
+```
+
+The latter is not currently claimed by Domain Analyzer.
+
+## Evidence Manifest
+
+The evidence manifest contains collection-level integrity information.
+
+The manifest records artifact identity, artifact type, source, collection timestamp, artifact SHA-256, collector information, classification, and parent artifact references.
+
+The manifest itself is hashed when finalized.
+
+This creates two related integrity layers:
+
+```text
+Evidence Artifact
+      |
+      +-- SHA-256 of artifact data
+      |
+      v
+Evidence Manifest
+      |
+      +-- Artifact integrity references
+      +-- Collection metadata
+      +-- Manifest SHA-256
+```
+
+The verification utility checks these integrity relationships and reports whether the stored evidence and manifest remain valid.
+
 
 # Report Verification
 
