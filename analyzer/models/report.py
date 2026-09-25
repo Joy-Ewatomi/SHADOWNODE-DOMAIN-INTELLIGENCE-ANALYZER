@@ -7,10 +7,11 @@ class DomainReport:
 
     # Investigation metadata.
     case_id: str | None = None
+    run_id: str | None = None
     collection_started_at: str | None = None
     collection_completed_at: str | None = None
     tool: str = "Domain Analyzer"
-    tool_version: str = "1.0"
+    tool_version: str = "0.1.0"
     collector_versions: dict[str, str] = field(
         default_factory=dict
     )
@@ -36,6 +37,7 @@ class DomainReport:
 
             # Investigation metadata.
             "case_id": self.case_id,
+            "run_id": self.run_id,
             "collection_started_at": (
                 self.collection_started_at
             ),

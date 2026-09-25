@@ -234,9 +234,11 @@ def test_analyze_domain_builds_complete_evidence_pipeline(monkeypatch):
 
     # Investigation metadata.
     assert report["case_id"] == "domain-example-com"
+    assert report["run_id"]
+    assert report["run_id"].startswith("run-")
 
     assert report["tool"] == "Domain Analyzer"
-    assert report["tool_version"] == "1.0"
+    assert report["tool_version"] == "0.1.0"
 
     assert report["collection_started_at"]
     assert report["collection_completed_at"]
@@ -284,12 +286,14 @@ def test_analyze_domain_builds_complete_evidence_pipeline(monkeypatch):
     manifest = report["evidence_manifest"]
 
     assert manifest["case_id"] == "domain-example-com"
+    assert manifest["run_id"] == report["run_id"]
+
+    assert manifest["sealed"] is True
+    assert manifest["finalized_at"]
+    assert manifest["sha256"]
 
     assert manifest["artifact_count"] == 8
-
     assert len(manifest["artifacts"]) == 8
-
-    assert manifest["sha256"]
 
     findings = report["findings"]
 
@@ -303,11 +307,11 @@ def test_analyze_domain_builds_complete_evidence_pipeline(monkeypatch):
     assert len(finding_ids) == len(set(finding_ids))
 
     assert all(
-        finding_id.startswith(
-            "domain-example-com-finding-"
-        )
-        for finding_id in finding_ids
+    finding_id.startswith(
+        f"{report['run_id']}-finding-"
     )
+    for finding_id in finding_ids
+)
 
     assert all(
         finding["evidence_artifacts"]
@@ -422,3 +426,112 @@ def test_analyze_domain_normalizes_domain(monkeypatch):
         "example.com",
         "example.com",
     ]
+
+
+def test_analyze_domain_generates_unique_run_ids(monkeypatch):
+    domain = "example.com"
+
+    monkeypatch.setattr(
+        core,
+        "get_rdap_info",
+        lambda value: {},
+    )
+
+    monkeypatch.setattr(
+        core,
+        "get_dns_records",
+        lambda value: {},
+    )
+
+    monkeypatch.setattr(
+        core,
+        "get_ip_info",
+        lambda value: {
+            "ipv4": [],
+            "ipv6": [],
+        },
+    )
+
+    monkeypatch.setattr(
+        core,
+        "get_asn_info",
+        lambda value: {},
+    )
+
+    monkeypatch.setattr(
+        core,
+        "analyze_http",
+        lambda value: {},
+    )
+
+    monkeypatch.setattr(
+        core,
+        "analyze_tls",
+        lambda value: {},
+    )
+
+    monkeypatch.setattr(
+        core,
+        "get_ct_info",
+        lambda value: {},
+    )
+
+    monkeypatch.setattr(
+        core,
+        "correlate_ct_with_dns",
+        lambda value: [],
+    )
+
+    monkeypatch.setattr(
+        core,
+        "build_ct_infrastructure_correlations",
+        lambda value: {
+            "shared_ip": {},
+            "shared_asn": {},
+        },
+    )
+
+    monkeypatch.setattr(
+        core,
+        "build_ct_infrastructure_findings",
+        lambda value: [],
+    )
+
+    first = core.analyze_domain(domain)
+    second = core.analyze_domain(domain)
+
+    assert first["case_id"] == second["case_id"]
+    assert first["case_id"] == "domain-example-com"
+
+    assert first["run_id"] != second["run_id"]
+
+    assert first["run_id"].startswith("run-")
+    assert second["run_id"].startswith("run-")
+
+    first_artifact_ids = [
+        artifact["artifact_id"]
+        for artifact in first["evidence"]
+    ]
+
+    second_artifact_ids = [
+        artifact["artifact_id"]
+        for artifact in second["evidence"]
+    ]
+
+    assert set(first_artifact_ids).isdisjoint(
+        second_artifact_ids
+    )
+
+    first_finding_ids = [
+        finding["finding_id"]
+        for finding in first["findings"]
+    ]
+
+    second_finding_ids = [
+        finding["finding_id"]
+        for finding in second["findings"]
+    ]
+
+    assert set(first_finding_ids).isdisjoint(
+        second_finding_ids
+    )

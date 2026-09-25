@@ -24,15 +24,18 @@ class EvidenceCollector:
     def __init__(
         self,
         case_id: str,
+        run_id: str,
         collector_version: str = COLLECTOR_VERSION,
     ):
         self.case_id = case_id
+        self.run_id = run_id
         self.collector_version = collector_version
 
         self.created_at = utc_now()
 
         self.manifest = EvidenceManifest(
             case_id=case_id,
+            run_id=run_id,
             created_at=self.created_at,
         )
 
@@ -72,7 +75,7 @@ class EvidenceCollector:
         self._sequence += 1
 
         artifact_id = (
-            f"{self.case_id}-"
+            f"{self.run_id}-"
             f"{self._sequence:04d}"
         )
 
@@ -104,9 +107,23 @@ class EvidenceCollector:
 
         return artifact_dict
 
+    def finalize(self) -> dict:
+        """
+        Finalize and seal the evidence manifest.
+
+        Returns the finalized manifest representation.
+        """
+
+        self.manifest.finalize(
+            finalized_at=utc_now(),
+        )
+
+        return self.manifest.to_dict()
+
     def to_dict(self) -> dict:
         return {
             "case_id": self.case_id,
+            "run_id": self.run_id,
             "created_at": self.created_at,
             "artifact_count": len(self.artifacts),
             "artifacts": self.artifacts,

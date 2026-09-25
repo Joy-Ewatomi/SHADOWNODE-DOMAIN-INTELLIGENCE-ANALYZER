@@ -62,6 +62,7 @@ def test_evidence_artifact_hash_is_valid():
 def test_evidence_collector_creates_sequential_artifacts():
     collector = EvidenceCollector(
         case_id="test-case",
+        run_id="test-run",
         collector_version="1.0",
     )
 
@@ -79,14 +80,15 @@ def test_evidence_collector_creates_sequential_artifacts():
         collector="Test Collector",
     )
 
-    assert first["artifact_id"] == "test-case-0001"
-    assert second["artifact_id"] == "test-case-0002"
+    assert first["artifact_id"] == "test-run-0001"
+    assert second["artifact_id"] == "test-run-0002"
     assert len(collector.artifacts) == 2
 
 
 def test_artifact_verification_passes():
     collector = EvidenceCollector(
         case_id="test-case",
+        run_id="test-run",
         collector_version="1.0",
     )
 
@@ -105,6 +107,7 @@ def test_artifact_verification_passes():
 def test_artifact_verification_detects_tampering():
     collector = EvidenceCollector(
         case_id="test-case",
+        run_id="test-run",
         collector_version="1.0",
     )
 
@@ -129,6 +132,7 @@ def test_artifact_verification_detects_tampering():
 def test_artifact_provenance_passes_for_valid_parent():
     collector = EvidenceCollector(
         case_id="test-case",
+        run_id="test-run",
         collector_version="1.0",
     )
 
@@ -163,6 +167,7 @@ def test_artifact_provenance_passes_for_valid_parent():
 def test_artifact_provenance_detects_missing_parent():
     collector = EvidenceCollector(
         case_id="test-case",
+        run_id="test-run",
         collector_version="1.0",
     )
 
@@ -291,6 +296,7 @@ def test_finding_provenance_detects_missing_artifact_reference():
 def test_manifest_verification_passes():
     collector = EvidenceCollector(
         case_id="test-case",
+        run_id="test-run",
         collector_version="1.0",
     )
 
@@ -315,6 +321,7 @@ def test_manifest_verification_passes():
 def test_manifest_verification_detects_tampering():
     collector = EvidenceCollector(
         case_id="test-case",
+        run_id="test-run",
         collector_version="1.0",
     )
 
@@ -338,3 +345,82 @@ def test_manifest_verification_detects_tampering():
         result["expected_sha256"]
         != result["actual_sha256"]
     )
+
+def test_manifest_can_be_finalized_and_sealed():
+    collector = EvidenceCollector(
+        case_id="test-case",
+        run_id="test-run",
+        collector_version="1.0",
+    )
+
+    collector.add(
+        artifact_type="test",
+        source="unit-test",
+        data={"value": "final"},
+        collector="Test Collector",
+    )
+
+    finalized = collector.finalize()
+
+    assert finalized["case_id"] == "test-case"
+    assert finalized["run_id"] == "test-run"
+    assert finalized["sealed"] is True
+    assert finalized["finalized_at"]
+    assert finalized["artifact_count"] == 1
+    assert finalized["sha256"]
+
+    assert collector.manifest.to_dict() == finalized
+
+
+def test_finalized_manifest_rejects_new_artifacts():
+    collector = EvidenceCollector(
+        case_id="test-case",
+        run_id="test-run",
+        collector_version="1.0",
+    )
+
+    collector.add(
+        artifact_type="test",
+        source="unit-test",
+        data={"value": "before"},
+        collector="Test Collector",
+    )
+
+    collector.finalize()
+
+    try:
+        collector.add(
+            artifact_type="test",
+            source="unit-test",
+            data={"value": "after"},
+            collector="Test Collector",
+        )
+    except RuntimeError as exc:
+        assert str(exc) == (
+            "cannot add artifact to a finalized manifest"
+        )
+    else:
+        raise AssertionError(
+            "Expected RuntimeError after manifest finalization"
+        )
+
+
+def test_manifest_cannot_be_finalized_twice():
+    collector = EvidenceCollector(
+        case_id="test-case",
+        run_id="test-run",
+        collector_version="1.0",
+    )
+
+    collector.finalize()
+
+    try:
+        collector.finalize()
+    except RuntimeError as exc:
+        assert str(exc) == (
+            "manifest is already finalized"
+        )
+    else:
+        raise AssertionError(
+            "Expected RuntimeError when finalizing twice"
+        )

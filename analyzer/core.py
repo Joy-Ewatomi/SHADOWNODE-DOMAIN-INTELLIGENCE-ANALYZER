@@ -6,6 +6,7 @@ from .collectors.http import analyze_http
 from .collectors.tls import analyze_tls
 from .collectors.ct import get_ct_info
 from datetime import datetime, timezone
+from uuid import uuid4
 
 from .models.report import DomainReport
 
@@ -27,7 +28,7 @@ from .intelligence.ct_correlation import (
 )
 
 TOOL_NAME = "Domain Analyzer"
-TOOL_VERSION = "1.0"
+TOOL_VERSION = "0.1.0"
 
 COLLECTOR_VERSIONS = {
     "RDAP Collector": "1.0",
@@ -99,7 +100,7 @@ def link_findings_to_artifacts(
 
 def assign_finding_ids(
     findings: list[dict],
-    case_id: str,
+    run_id: str,
 ) -> list[dict]:
     """
     Assign stable sequential IDs to findings within a case.
@@ -114,7 +115,7 @@ def assign_finding_ids(
         start=1,
     ):
         finding["finding_id"] = (
-            f"{case_id}-finding-{index:04d}"
+            f"{run_id}-finding-{index:04d}"
         )
 
     return findings
@@ -129,8 +130,13 @@ def analyze_domain(domain: str) -> dict:
         f"domain-{domain.replace('.', '-')}"
     )
 
+    run_id = (
+        f"run-{uuid4().hex}"
+    )
+
     evidence = EvidenceCollector(
         case_id=case_id,
+        run_id=run_id,
         collector_version="1.0",
     )
 
@@ -326,18 +332,25 @@ def analyze_domain(domain: str) -> dict:
 
     findings = assign_finding_ids(
         findings=findings,
-        case_id=case_id,
+        run_id=run_id,
     )
+
+    # ---------------------------------------------------------
+    # Finalize evidence manifest
+    # ---------------------------------------------------------
+
+    evidence.finalize()
+
+    collection_completed_at = evidence.manifest.finalized_at
 
     # ---------------------------------------------------------
     # Report
     # ---------------------------------------------------------
 
-    collection_completed_at = utc_now()
-
     report = DomainReport(
         domain=domain,
         case_id=case_id,
+        run_id=run_id,
         collection_started_at=collection_started_at,
         collection_completed_at=collection_completed_at,
         tool=TOOL_NAME,

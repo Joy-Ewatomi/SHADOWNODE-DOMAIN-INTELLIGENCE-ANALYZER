@@ -31,15 +31,15 @@ def verify_manifest(manifest: dict) -> dict:
 
     payload = {
         "case_id": manifest.get("case_id"),
+        "run_id": manifest.get("run_id"),
         "created_at": manifest.get("created_at"),
+        "finalized_at": manifest.get("finalized_at"),
+        "sealed": manifest.get("sealed", False),
         "artifact_count": manifest.get(
             "artifact_count",
             len(manifest.get("artifacts", [])),
         ),
-        "artifacts": manifest.get(
-            "artifacts",
-            [],
-        ),
+        "artifacts": manifest.get("artifacts", []),
     }
 
     actual = sha256_json(payload)
