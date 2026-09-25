@@ -237,7 +237,7 @@ def test_analyze_domain_builds_complete_evidence_pipeline(monkeypatch):
     assert report["run_id"]
     assert report["run_id"].startswith("run-")
 
-    assert report["tool"] == "Domain Analyzer"
+    assert report["tool"] == "ShadowNode Domain Intelligence Analyzer"
     assert report["tool_version"] == "0.1.0"
 
     assert report["collection_started_at"]

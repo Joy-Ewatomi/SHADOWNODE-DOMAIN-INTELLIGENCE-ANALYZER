@@ -10,7 +10,7 @@ class DomainReport:
     run_id: str | None = None
     collection_started_at: str | None = None
     collection_completed_at: str | None = None
-    tool: str = "Domain Analyzer"
+    tool: str = "ShadowNode Domain Intelligence Analyzer"
     tool_version: str = "0.1.0"
     collector_versions: dict[str, str] = field(
         default_factory=dict

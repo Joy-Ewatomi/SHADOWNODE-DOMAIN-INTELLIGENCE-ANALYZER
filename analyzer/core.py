@@ -27,7 +27,7 @@ from .intelligence.ct_correlation import (
     build_ct_infrastructure_findings,
 )
 
-TOOL_NAME = "Domain Analyzer"
+TOOL_NAME = "ShadowNode Domain Intelligence Analyzer"
 TOOL_VERSION = "0.1.0"
 
 COLLECTOR_VERSIONS = {

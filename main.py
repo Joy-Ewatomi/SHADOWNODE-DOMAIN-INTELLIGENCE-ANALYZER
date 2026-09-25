@@ -1,17 +1,34 @@
+import argparse
 import json
-import sys
 
 from analyzer.core import analyze_domain
+from analyzer.report import render_human_report
 
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python main.py example.com")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(
+        description="Passive OSINT domain intelligence analyzer."
+    )
 
-    domain = sys.argv[1]
+    parser.add_argument(
+        "domain",
+        help="Domain to analyze, for example example.com",
+    )
 
-    result = analyze_domain(domain)
+    parser.add_argument(
+        "--format",
+        choices=("json", "text"),
+        default="json",
+        help="Report format (default: json)",
+    )
+
+    args = parser.parse_args()
+
+    result = analyze_domain(args.domain)
+
+    if args.format == "text":
+        print(render_human_report(result))
+        return
 
     print(json.dumps(result, indent=2))
 
