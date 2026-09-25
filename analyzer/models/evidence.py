@@ -16,7 +16,8 @@ class Evidence:
     source: str
     observed_at: str
     record_type: str | None = None
-    confidence: str = "observed"
+    classification: str = "observed"
+    confidence: str = "high"
 
     @classmethod
     def create(
@@ -24,7 +25,8 @@ class Evidence:
         value: Any,
         source: str,
         record_type: str | None = None,
-        confidence: str = "observed",
+        classification: str = "observed",
+        confidence: str = "high",
         observed_at: str | None = None,
     ):
         return cls(
@@ -32,6 +34,7 @@ class Evidence:
             source=source,
             observed_at=observed_at or utc_now(),
             record_type=record_type,
+            classification=classification,
             confidence=confidence,
         )
 
@@ -41,5 +44,6 @@ class Evidence:
             "source": self.source,
             "observed_at": self.observed_at,
             "record_type": self.record_type,
+            "classification": self.classification,
             "confidence": self.confidence,
         }

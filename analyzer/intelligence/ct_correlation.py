@@ -269,7 +269,8 @@ def build_ct_infrastructure_findings(
             },
             source="CT Infrastructure Correlation",
             record_type="shared_ip",
-            confidence="derived",
+            classification="derived",
+            confidence="low",
         )
 
         findings.append(
@@ -335,7 +336,8 @@ def build_ct_infrastructure_findings(
             },
             source="CT Infrastructure Correlation",
             record_type="shared_asn",
-            confidence="derived",
+            classification="derived",
+            confidence="low",
         )
 
         findings.append(

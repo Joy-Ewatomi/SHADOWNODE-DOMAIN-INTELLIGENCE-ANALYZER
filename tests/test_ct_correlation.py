@@ -165,6 +165,14 @@ def test_shared_ip_finding_is_derived_correlation():
         finding["evidence"][0]["record_type"]
         == "shared_ip"
     )
+    assert (
+        finding["evidence"][0]["classification"]
+        == "derived"
+    )
+    assert (
+        finding["evidence"][0]["confidence"]
+        == "low"
+    )
 
 
 def test_shared_asn_finding_is_derived_correlation():
@@ -212,6 +220,14 @@ def test_shared_asn_finding_is_derived_correlation():
     assert (
         finding["evidence"][0]["record_type"]
         == "shared_asn"
+    )
+    assert (
+        finding["evidence"][0]["classification"]
+        == "derived"
+    )
+    assert (
+        finding["evidence"][0]["confidence"]
+        == "low"
     )
 
 
