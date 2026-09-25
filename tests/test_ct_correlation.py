@@ -154,7 +154,7 @@ def test_shared_ip_finding_is_derived_correlation():
         == "Shared IP infrastructure: 203.0.113.10"
     )
     assert finding["finding_type"] == "correlation"
-    assert finding["confidence"] == "high"
+    assert finding["confidence"] == "low"
 
     assert (
         finding["evidence"][0]["source"]
@@ -202,7 +202,7 @@ def test_shared_asn_finding_is_derived_correlation():
         == "Shared ASN infrastructure: AS64500"
     )
     assert finding["finding_type"] == "correlation"
-    assert finding["confidence"] == "high"
+    assert finding["confidence"] == "low"
 
     assert (
         finding["evidence"][0]["source"]

@@ -291,7 +291,7 @@ def build_ct_infrastructure_findings(
                     "itself establish common ownership, control, "
                     "or an application-level relationship."
                 ),
-                confidence="high",
+                confidence="low",
                 finding_type="correlation",
                 evidence=[
                     evidence.to_dict()
@@ -359,7 +359,7 @@ def build_ct_infrastructure_findings(
                     "does not by itself establish common ownership, "
                     "control, or an application-level relationship."
                 ),
-                confidence="high",
+                confidence="low",
                 finding_type="correlation",
                 evidence=[
                     evidence.to_dict()
