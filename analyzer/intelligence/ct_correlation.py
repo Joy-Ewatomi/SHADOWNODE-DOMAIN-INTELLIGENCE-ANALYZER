@@ -344,7 +344,7 @@ def build_ct_infrastructure_findings(
             Finding(
                 category="correlation",
                 name=(
-                    f"Shared ASN infrastructure: "
+                    f"CT-associated hostnames share ASN: "
                     f"AS{asn_number}"
                 ),
                 value={

@@ -146,7 +146,7 @@ def build_correlation_findings(
         findings.append(
             Finding(
                 category="correlation",
-                name=f"Shared ASN infrastructure: AS{asn_number}",
+                name=f"Observed IPs share ASN: AS{asn_number}",
                 value={
                     "asn": asn_number,
                     "ips": ip_addresses,

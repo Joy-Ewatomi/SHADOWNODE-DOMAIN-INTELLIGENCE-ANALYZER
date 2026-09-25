@@ -207,7 +207,7 @@ def test_shared_asn_finding_is_derived_correlation():
     assert finding["category"] == "correlation"
     assert (
         finding["name"]
-        == "Shared ASN infrastructure: AS64500"
+        == "CT-associated hostnames share ASN: AS64500"
     )
     assert finding["finding_type"] == "correlation"
     assert finding["confidence"] == "low"
