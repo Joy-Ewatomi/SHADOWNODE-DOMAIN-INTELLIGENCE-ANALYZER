@@ -8,7 +8,7 @@ The project is designed around an important principle:
 
 > **Observed evidence should remain distinguishable from analytical conclusions.**
 
-Instead of treating a finding as an isolated claim, Domain Analyzer maintains relationships between findings and the evidence artifacts that support them.
+Instead of treating a finding as an isolated claim, ShadowNode Domain Intelligence Analyzer maintains relationships between findings and the evidence artifacts that support them.
 
 ---
 
@@ -207,7 +207,7 @@ domain-analyzer/
 
 # Requirements
 
-Domain Analyzer currently targets:
+ShadowNode Domain Intelligence Analyzer currently targets:
 
 * Python 3.12+
 * Internet connectivity for external passive data sources
@@ -332,8 +332,8 @@ Reports contain investigation metadata including:
   "case_id": "domain-example-com",
   "collection_started_at": "...",
   "collection_completed_at": "...",
-  "tool": "Domain Analyzer",
-  "tool_version": "1.0",
+  "tool": "ShadowNode Domain Intelligence Analyzer",
+  "tool_version": "0.1.0",
   "collector_versions": {}
 }
 ```
@@ -354,7 +354,7 @@ Timestamps are recorded using UTC.
 
 # Evidence Model
 
-Domain Analyzer distinguishes between **observed** and **derived** information.
+ShadowNode Domain Intelligence Analyzer distinguishes between **observed** and **derived** information.
 
 ## Observed Evidence
 
@@ -526,7 +526,7 @@ Raw-response hash     Structured artifact
                      Artifact hash
 ```
 
-The latter is not currently claimed by Domain Analyzer.
+The latter is not currently claimed by ShadowNode Domain Intelligence Analyzer.
 
 ## Evidence Manifest
 
@@ -661,7 +661,7 @@ Similarly, an ASN identifies a network registration relationship and should not 
 
 Certificate Transparency data provides certificate-associated hostname observations.
 
-Domain Analyzer normalizes CT hostnames by:
+ShadowNode Domain Intelligence Analyzer normalizes CT hostnames by:
 
 * converting names to lowercase
 * removing trailing dots
@@ -778,7 +778,7 @@ Generated investigation reports should not be committed to the repository.
 
 # Security and Privacy
 
-Domain Analyzer is designed for passive intelligence collection, but collected information may still be sensitive.
+ShadowNode Domain Intelligence Analyzer is designed for passive intelligence collection, but collected information may still be sensitive.
 
 Reports can contain:
 
@@ -807,7 +807,7 @@ reports/
 
 # Responsible Use
 
-Domain Analyzer is intended for legitimate security research, infrastructure analysis, defensive security, digital investigations, and other authorized purposes.
+ShadowNode Domain Intelligence Analyzer is intended for legitimate security research, infrastructure analysis, defensive security, digital investigations, and other authorized purposes.
 
 Only investigate domains and infrastructure where you have an appropriate legal or operational basis to do so.
 
@@ -826,7 +826,7 @@ The tool is designed to collect publicly observable information. This does not r
 
 # Limitations
 
-Domain Analyzer is an observation and correlation tool.
+ShadowNode Domain Intelligence Analyzer is an observation and correlation tool.
 
 It does not guarantee:
 

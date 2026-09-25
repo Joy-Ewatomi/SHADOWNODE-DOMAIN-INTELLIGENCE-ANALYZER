@@ -34,7 +34,7 @@ def get_ct_info(domain: str) -> dict:
             },
             timeout=20,
             headers={
-                "User-Agent": "DomainAnalyzer/1.0",
+                "User-Agent": "SDIA/0.1.0",
                 "Accept": "application/json",
             },
         )

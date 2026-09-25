@@ -42,7 +42,7 @@ def analyze_http(domain: str) -> dict:
             timeout=10,
             allow_redirects=True,
             headers={
-                "User-Agent": "DomainAnalyzer/1.0",
+                "User-Agent": "SDIA/0.1.0",
             },
         )
 

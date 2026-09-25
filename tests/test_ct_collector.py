@@ -480,7 +480,7 @@ def test_get_ct_info_request_parameters(
     assert captured["kwargs"]["timeout"] == 20
 
     assert captured["kwargs"]["headers"] == {
-        "User-Agent": "DomainAnalyzer/1.0",
+        "User-Agent": "SDIA/0.1.0",
         "Accept": "application/json",
     }
 

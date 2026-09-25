@@ -360,5 +360,5 @@ def test_analyze_http_passes_expected_request_options(
     assert captured["kwargs"]["timeout"] == 10
     assert captured["kwargs"]["allow_redirects"] is True
     assert captured["kwargs"]["headers"] == {
-        "User-Agent": "DomainAnalyzer/1.0"
+        "User-Agent": "SDIA/0.1.0"
     }
