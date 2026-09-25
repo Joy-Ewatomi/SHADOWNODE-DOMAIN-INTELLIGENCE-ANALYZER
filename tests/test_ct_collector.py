@@ -511,3 +511,77 @@ def test_normalize_ct_hostname_whitespace(
     assert ct.normalize_ct_hostname(
         "   "
     ) is None
+
+def test_get_ct_info_under_limit_records_not_truncated(
+    monkeypatch,
+):
+    data = [
+        {
+            "id": "cert-1",
+            "dns_names": ["example.com"],
+        },
+        {
+            "id": "cert-2",
+            "dns_names": ["www.example.com"],
+        },
+    ]
+
+    class FakeResponse:
+        status_code = 200
+        reason = "OK"
+
+        def json(self):
+            return data
+
+    monkeypatch.setattr(
+        ct.requests,
+        "get",
+        lambda *args, **kwargs: FakeResponse(),
+    )
+
+    result = ct.get_ct_info("example.com")
+
+    assert result["available"] is True
+    assert result["status"] == "success"
+    assert result["certificate_count"] == 2
+    assert result["returned_count"] == 2
+    assert result["result_limit"] == 100
+    assert result["truncated"] is False
+    assert result["total_available"] is None
+
+
+def test_get_ct_info_over_limit_records_are_truncated(
+    monkeypatch,
+):
+    data = [
+        {
+            "id": f"cert-{index}",
+            "dns_names": [
+                f"host-{index}.example.com"
+            ],
+        }
+        for index in range(101)
+    ]
+
+    class FakeResponse:
+        status_code = 200
+        reason = "OK"
+
+        def json(self):
+            return data
+
+    monkeypatch.setattr(
+        ct.requests,
+        "get",
+        lambda *args, **kwargs: FakeResponse(),
+    )
+
+    result = ct.get_ct_info("example.com")
+
+    assert result["available"] is True
+    assert result["status"] == "success"
+    assert result["certificate_count"] == 100
+    assert result["returned_count"] == 100
+    assert result["result_limit"] == 100
+    assert result["truncated"] is True
+    assert result["total_available"] is None

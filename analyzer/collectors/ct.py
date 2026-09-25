@@ -5,6 +5,8 @@ CERTSPOTTER_URL = (
     "https://api.certspotter.com/v1/issuances"
 )
 
+CT_RESULT_LIMIT = 100
+
 
 def get_ct_info(domain: str) -> dict:
     domain = domain.strip().lower()
@@ -16,6 +18,10 @@ def get_ct_info(domain: str) -> dict:
         "certificates": [],
         "names": [],
         "certificate_count": 0,
+        "returned_count": 0,
+        "result_limit": CT_RESULT_LIMIT,
+        "truncated": False,
+        "total_available": None,
     }
 
     try:
@@ -62,7 +68,11 @@ def get_ct_info(domain: str) -> dict:
         seen_certificates = set()
         seen_names = set()
 
-        for certificate in data:
+        result["truncated"] = (
+            len(data) >= CT_RESULT_LIMIT
+        )
+
+        for certificate in data[:CT_RESULT_LIMIT]:
             if not isinstance(certificate, dict):
                 continue
 
@@ -135,6 +145,7 @@ def get_ct_info(domain: str) -> dict:
         result["certificate_count"] = len(
             result["certificates"]
         )
+        result["returned_count"] = result["certificate_count"]
 
         result["names"].sort()
 
